@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { submitFormData } from '../services/formularzService'
+import { submitFormData, fetchKursyKategorie, fetchKursyByKategoria } from '../services/formularzService'
 import { validateField } from '../utils/validation'
 import { calculateAge } from '../utils/dateUtils'
 
@@ -13,17 +13,75 @@ function Formularz() {
 		pesel: '',
 		plec: '',
 		obywatelstwo: '',
+		kurs_id: '',
 	})
 	const [wiek, setWiek] = useState('')
 	const [errors, setErrors] = useState({})
 	const [touched, setTouched] = useState({})
 	const [submitStatus, setSubmitStatus] = useState('idle')
+	const [kategorie, setKategorie] = useState([])
+	const [wybranaKategoria, setWybranaKategoria] = useState('')
+	const [kursy, setKursy] = useState([])
+	const [loadingKategorie, setLoadingKategorie] = useState(false)
+	const [loadingKursy, setLoadingKursy] = useState(false)
+
+	// Pobieranie kategorii przy montowaniu komponentu
+	useEffect(() => {
+		const loadKategorie = async () => {
+			setLoadingKategorie(true)
+			try {
+				const data = await fetchKursyKategorie()
+				setKategorie(data)
+			} catch (error) {
+				console.error('Błąd podczas pobierania kategorii:', error.message)
+			} finally {
+				setLoadingKategorie(false)
+			}
+		}
+		loadKategorie()
+	}, [])
+
+	// Pobieranie kursów po wyborze kategorii
+	useEffect(() => {
+		if (wybranaKategoria) {
+			const loadKursy = async () => {
+				setLoadingKursy(true)
+				try {
+					const data = await fetchKursyByKategoria(wybranaKategoria)
+					setKursy(data)
+					// Resetowanie wybranego kursu przy zmianie kategorii
+					setFormData((prev) => ({
+						...prev,
+						kurs_id: '',
+					}))
+				} catch (error) {
+					console.error('Błąd podczas pobierania kursów:', error.message)
+					// W przypadku błędu czyścimy listę kursów i zaznaczony kurs,
+					// aby nie pozostawiać nieaktualnych opcji
+					setKursy([])
+					setFormData((prev) => ({
+						...prev,
+						kurs_id: '',
+					}))
+				} finally {
+					setLoadingKursy(false)
+				}
+			}
+			loadKursy()
+		} else {
+			setKursy([])
+			setFormData((prev) => ({
+				...prev,
+				kurs_id: '',
+			}))
+		}
+	}, [wybranaKategoria])
 
 	// Ustalanie wieku osoby na podstawie daty urodzenia i powtórna weryfikacja peselu po zmianie daty urodzenia
 	useEffect(() => {
 		setWiek(calculateAge(formData.dataUrodzenia))
 
-		if (formData.pesel ) {
+		if (formData.pesel) {
 			const peselError = validateFieldWrapper('pesel', formData.pesel)
 			setErrors((prev) => ({
 				...prev,
@@ -40,6 +98,29 @@ function Formularz() {
 		error = validateField(name, value, formData)
 
 		return error
+	}
+
+	// Obsługa zmiany kategorii
+	const handleKategoriaChange = (e) => {
+		const value = e.target.value
+		setWybranaKategoria(value)
+		setTouched((prev) => ({
+			...prev,
+			wybranaKategoria: true,
+		}))
+	}
+
+	// Obsługa zmiany kursu
+	const handleKursChange = (e) => {
+		const { value } = e.target
+		setFormData((prev) => ({
+			...prev,
+			kurs_id: value,
+		}))
+		setTouched((prev) => ({
+			...prev,
+			kurs_id: true,
+		}))
 	}
 
 	// Obsługa zmiany wartości w polach formularza
@@ -129,10 +210,12 @@ function Formularz() {
 			pesel: '',
 			plec: '',
 			obywatelstwo: '',
+			kurs_id: '',
 		})
 		setWiek('')
 		setErrors({})
 		setTouched({})
+		setWybranaKategoria('')
 	}
 
 	// Pobieranie zawartości przycisku w zależności od statusu wysyłania
@@ -337,6 +420,58 @@ function Formularz() {
 								{errors.obywatelstwo && touched.obywatelstwo && (
 									<div className='invalid-feedback d-block'>{errors.obywatelstwo}</div>
 								)}
+							</div>
+						</div>
+
+
+						<div className='row mb-3'>
+							<div className='col-12'>
+								{/* Kategoria kursu */}
+
+								<label htmlFor='wybranaKategoria' className='form-label'>
+									Kategoria kursu:
+								</label>
+								<select
+									id='wybranaKategoria'
+									className='form-select'
+									value={wybranaKategoria}
+									onChange={handleKategoriaChange}
+									disabled={loadingKategorie}>
+									<option value=''>- Wybierz kategorię -</option>
+									{kategorie.map((kat) => (
+										<option key={kat} value={kat}>
+											{kat}
+										</option>
+									))}
+								</select>
+								{loadingKategorie && <small className='text-muted'>Ładowanie kategorii...</small>}
+							</div>
+						</div>
+
+						<div className='row mb-4'>
+							<div className='col-12'>
+								{/* Kurs */}
+
+								<label htmlFor='kurs_id' className='form-label'>
+									Kurs:
+								</label>
+								<select
+									id='kurs_id'
+									className={`form-select ${!wybranaKategoria ? 'disabled' : ''}`}
+									value={formData.kurs_id}
+									onChange={handleKursChange}
+									onBlur={() => setTouched((prev) => ({ ...prev, kurs_id: true }))}
+									disabled={!wybranaKategoria || loadingKursy}>
+									<option value=''>- Wybierz kurs -</option>
+									{kursy.map((kurs) => (
+										<option key={kurs.id} value={kurs.id}>
+											{kurs.nazwa}
+										</option>
+									))}
+								</select>
+								{loadingKursy && <small className='text-muted'>Ładowanie kursów...</small>}
+								{!wybranaKategoria && <small className='text-muted d-block'>Wybierz najpierw kategorię</small>}
+								{errors.kurs_id && touched.kurs_id && <div className='invalid-feedback d-block'>{errors.kurs_id}</div>}
 							</div>
 						</div>
 
