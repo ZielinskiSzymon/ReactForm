@@ -1,0 +1,86 @@
+import { useState, useEffect } from 'react';
+import data from '../../data.json';
+
+export const useLocation = (formData, setFormData) => {
+    const [wojewodztwa, setWojewodztwa] = useState([]);
+    const [powiaty, setPowiaty] = useState([]);
+    const [gminy, setGminy] = useState([]);
+    const [miejscowosci, setMiejscowosci] = useState([]);
+
+    useEffect(() => {
+        setWojewodztwa(Object.keys(data)); 
+    }, []);
+
+    const handleWojewodztwoChange = e => {
+        const wojewodztwo = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            wojewodztwo,
+            powiat: '',
+            gmina: '',
+            miejscowosc: '',
+            kodPocztowy: '',
+            poczta: '',
+        }));
+        setPowiaty(wojewodztwo ? Object.keys(data[wojewodztwo] || {}) : []);
+        setGminy([]);
+        setMiejscowosci([]);
+    };
+
+    const handlePowiatChange = e => {
+        const powiat = e.target.value;
+        setFormData(prev => ({ ...prev, powiat, gmina: '', miejscowosc: '', kodPocztowy: '', poczta: '' }));
+        setGminy(powiat ? Object.keys(data[formData.wojewodztwo][powiat] || {}) : []);
+        setMiejscowosci([]);
+    };
+
+    const handleGminaChange = e => {
+        const gmina = e.target.value;
+        setFormData(prev => ({ ...prev, gmina, miejscowosc: '', kodPocztowy: '', poczta: '' }));
+        
+        const miejscowosciData = gmina ? data[formData.wojewodztwo][formData.powiat][gmina] || [] : [];
+        const nazwyMiejscowosci = miejscowosciData.map(item => item.nazwa || item); 
+        setMiejscowosci(nazwyMiejscowosci);
+    };
+
+    const handleMiejscowoscChange = e => {
+        const miejscowosc = e.target.value;
+        let kodPocztowy = '';
+        let poczta = miejscowosc; 
+
+        if (miejscowosc && formData.wojewodztwo && formData.powiat && formData.gmina) {
+            const miejscowosciData = data[formData.wojewodztwo][formData.powiat][formData.gmina] || [];
+            const selectedMiejscowosc = miejscowosciData.find(item => item.nazwa === miejscowosc);
+
+            if (selectedMiejscowosc) {
+                kodPocztowy = selectedMiejscowosc.kod || '';
+                poczta = selectedMiejscowosc.poczta || miejscowosc; 
+            }
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            miejscowosc,
+            kodPocztowy, 
+            poczta,      
+        }));
+    };
+
+	const resetLocation = () => {
+		setPowiaty([])
+		setGminy([])
+		setMiejscowosci([])
+	}
+
+    return {
+        wojewodztwa,
+        powiaty,
+        gminy,
+        miejscowosci,
+        handleWojewodztwoChange,
+        handlePowiatChange,
+        handleGminaChange,
+        handleMiejscowoscChange,
+		resetLocation
+    };
+};

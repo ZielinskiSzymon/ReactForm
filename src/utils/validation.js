@@ -88,6 +88,76 @@ export const validateField = (name, value, allValues = {}) => {
 			}
 			break
 
+		case 'wybranaKategoria':
+			if (!value) {
+				error = 'Kategoria kursu jest wymagana'
+			}
+			break
+
+		case 'kurs_id':
+			if (!value) {
+				error = 'Kurs jest wymagany'
+			}
+			break
+
+		case 'wojewodztwo':
+			if (!value) {
+				error = 'Województwo jest wymagane'
+			}
+			break
+
+		case 'powiat':
+			if (!value) {
+				error = 'Powiat jest wymagany'
+			}
+			break
+
+		case 'gmina':
+			if (!value) {
+				error = 'Gmina jest wymagana'
+			}
+			break
+
+		case 'miejscowosc':
+			if (!value) {
+				error = 'Miejscowość jest wymagana'
+			}
+			break
+            
+        case 'ulica':
+            if (!value.trim()) {
+                error = 'Ulica/Adres jest wymagany'
+            } else if (value.trim().length < 3) {
+                error = 'Nazwa ulicy musi mieć co najmniej 3 znaki'
+            } else if (!/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s/.-]+$/.test(value.trim())) {
+                error = 'Nazwa ulicy zawiera nieprawidłowe znaki'
+            }
+            break
+
+		case 'kodPocztowy':
+			if (!value.trim()) {
+				error = 'Kod pocztowy jest wymagany'
+			} else if (!/^\d{2}-\d{3}$/.test(value.trim())) {
+				error = 'Nieprawidłowy format kodu pocztowego (wymagany XX-XXX)'
+			}
+			break
+
+		case 'poczta':
+			if (!value.trim()) {
+				error = 'Poczta jest wymagana'
+			} else if (value.trim().length < 2) {
+				error = 'Nazwa poczty musi mieć co najmniej 2 znaki'
+			} else if (!/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s-]+$/.test(value.trim())) {
+				error = 'Nazwa poczty może zawierać tylko litery, spacje i myślniki'
+			}
+			break
+
+		case 'nrLokalu':
+			if (value.trim() && !/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s/.-]+$/.test(value.trim())) {
+				error = 'Numer lokalu zawiera nieprawidłowe znaki'
+			}
+			break
+            
 		default:
 			break
 	}

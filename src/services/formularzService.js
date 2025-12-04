@@ -1,4 +1,4 @@
-import supabase from '../supabaseClient'
+import supabase from '../supabaseClient';
 
 export const submitFormData = async (formData) => {
 	const dataToSubmit = {
@@ -11,6 +11,14 @@ export const submitFormData = async (formData) => {
 		plec: formData.plec,
 		obywatelstwo: formData.obywatelstwo,
 		kurs_id: formData.kurs_id,
+        wojewodztwo: formData.wojewodztwo,
+        powiat: formData.powiat,
+        gmina: formData.gmina,
+        miejscowosc: formData.miejscowosc,
+        ulica: formData.ulica, // DODANE
+        kod_pocztowy: formData.kodPocztowy, // DODANE
+        nr_lokalu: formData.nrLokalu, // DODANE
+        poczta: formData.poczta, // DODANE
 	}
 
 	const { error } = await supabase.from('dane_formularz').insert([dataToSubmit])
