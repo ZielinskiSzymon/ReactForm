@@ -1,16 +1,84 @@
-# React + Vite
+# ReactForm
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ReactForm to aplikacja formularza zbudowana w oparciu o **React** i
+**Vite**, wykorzystująca niestandardowe hooki, walidację danych oraz
+integrację z backendem. Projekt umożliwia dynamiczne pobieranie
+kategorii kursów, wyświetlanie powiązanych danych oraz obsługę i
+wysyłanie formularza.
 
-Currently, two official plugins are available:
+## 🚀 Funkcje
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   Dynamiczne pobieranie danych -- kategorie i kursy ładowane z
+    backendu.
+-   Niestandardowe hooki React:
+    -   useCourses -- pobieranie kategorii i kursów.
+    -   useFormHandling -- zarządzanie stanem i walidacją formularza.
+    -   useLocation -- pobieranie danych lokalizacyjnych (jeśli
+        wykorzystywane).
+    -   useSubmit -- wysyłanie formularza do API.
+-   Walidacja danych -- obsługa reguł walidacyjnych (np. przez
+    validate-polish).
+-   Bootstrap UI -- responsywny i przejrzysty interfejs.
+-   Vite -- ultraszybkie środowisko uruchomieniowe.
 
-## React Compiler
+## 📦 Wymagania
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   Node.js ≥ 18
+-   npm lub yarn
 
-## Expanding the ESLint configuration
+## 🔧 Instalacja
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+``` bash
+git clone https://github.com/ZielinskiSzymon/ReactForm.git
+cd ReactForm
+npm install
+npm run dev
+```
+
+## 📂 Struktura projektu
+
+    src/
+     ├─ components/
+     ├─ hooks/
+     ├─ services/
+     ├─ pages/
+     ├─ App.jsx
+     └─ main.jsx
+
+## 📘 Dokumentacja hooków
+
+### useCourses
+
+Pobiera listę kategorii oraz kursów.
+
+``` jsx
+import { useCourses } from './src/hooks/useCourses';
+
+const MyComponent = () => {
+  const { kategorie, kursy, loadingKategorie, loadingKursy } = useCourses();
+
+  if (loadingKategorie) return <p>Ładowanie kategorii...</p>;
+  if (loadingKursy) return <p>Ładowanie kursów...</p>;
+
+  return <div>{/* Dane */}</div>;
+};
+```
+
+## 🌐 Backend API
+
+Przykładowe endpointy:
+
+    GET /api/kategorie
+    GET /api/kursy?kategoriaId=ID
+    POST /api/formularz
+
+## 🤝 Współpraca
+
+1.  Fork repozytorium
+2.  Utwórz nowy branch
+3.  Wprowadź zmiany
+4.  Wyślij Pull Request
+
+## 📜 Licencja
+
+MIT License
