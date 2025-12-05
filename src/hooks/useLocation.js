@@ -46,23 +46,12 @@ export const useLocation = (formData, setFormData) => {
     const handleMiejscowoscChange = e => {
         const miejscowosc = e.target.value;
         let kodPocztowy = '';
-        let poczta = miejscowosc; 
 
-        if (miejscowosc && formData.wojewodztwo && formData.powiat && formData.gmina) {
-            const miejscowosciData = data[formData.wojewodztwo][formData.powiat][formData.gmina] || [];
-            const selectedMiejscowosc = miejscowosciData.find(item => item.nazwa === miejscowosc);
-
-            if (selectedMiejscowosc) {
-                kodPocztowy = selectedMiejscowosc.kod || '';
-                poczta = selectedMiejscowosc.poczta || miejscowosc; 
-            }
-        }
 
         setFormData(prev => ({
             ...prev,
             miejscowosc,
             kodPocztowy, 
-            poczta,      
         }));
     };
 

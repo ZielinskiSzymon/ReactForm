@@ -4,9 +4,6 @@ import { peselToDate } from './peselUtils'
 export const validateField = (name, value, allValues = {}) => {
 	let error = ''
 
-    peselToDate(value)
-
-
 	switch (name) {
 		case 'imie':
 			if (!value.trim()) {
@@ -49,6 +46,19 @@ export const validateField = (name, value, allValues = {}) => {
 				if (providedDate && peselDate) {
 					if (providedDate !== peselDate) {
 						error = 'PESEL nie zgadza się z datą urodzenia'
+					}
+				}
+
+				const providedPlec = allValues && allValues.plec ? allValues.plec : null
+				if (!error && providedPlec) {
+					const plecCyfra = parseInt(value.charAt(9), 10)
+					const isMale = plecCyfra % 2 !== 0
+					const isFemale = plecCyfra % 2 === 0
+
+					if (providedPlec === 'Mężczyzna' && !isMale) {
+						error = 'PESEL nie zgadza się z wybraną płcią'
+					} else if (providedPlec === 'Kobieta' && !isFemale) {
+						error = 'PESEL nie zgadza się z wybraną płcią'
 					}
 				}
 			}
@@ -123,16 +133,16 @@ export const validateField = (name, value, allValues = {}) => {
 				error = 'Miejscowość jest wymagana'
 			}
 			break
-            
-        case 'ulica':
-            if (!value.trim()) {
-                error = 'Ulica/Adres jest wymagany'
-            } else if (value.trim().length < 3) {
-                error = 'Nazwa ulicy musi mieć co najmniej 3 znaki'
-            } else if (!/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s/.-]+$/.test(value.trim())) {
-                error = 'Nazwa ulicy zawiera nieprawidłowe znaki'
-            }
-            break
+
+		case 'ulica':
+			if (!value.trim()) {
+				error = 'Ulica i numer domu/mieszkania są wymagane'
+			} else if (value.trim().length < 3) {
+				error = 'Adres musi mieć co najmniej 3 znaki'
+			} else if (!/^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s/.-]+$/.test(value.trim())) {
+				error = 'Adres zawiera nieprawidłowe znaki'
+			}
+			break
 
 		case 'kodPocztowy':
 			if (!value.trim()) {
@@ -157,7 +167,7 @@ export const validateField = (name, value, allValues = {}) => {
 				error = 'Numer lokalu zawiera nieprawidłowe znaki'
 			}
 			break
-            
+
 		default:
 			break
 	}
