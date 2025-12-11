@@ -1,7 +1,7 @@
-import { useFormHandling } from "../hooks/useFormHandling";
-import { useCourses } from "../hooks/useCourses";
-import { useLocation } from "../hooks/useLocation";
-import { useSubmit } from "../hooks/useSubmit";
+import { useFormHandling } from "../../hooks/useFormHandling";
+import { useCourses } from "../../hooks/useCourses";
+import { useLocation } from "../../hooks/useLocation";
+import { useSubmit } from "../../hooks/useSubmit";
 import PersonalDataSection from "./forms/PersonalDataSection";
 import CourseSelection from "./forms/CourseSelection";
 import AddressSection from "./forms/AddressSection";
@@ -13,7 +13,6 @@ function Formularz() {
     wiek,
     errors,
     setErrors,
-    touched,
     setTouched,
     handleChange,
     handleBlur,

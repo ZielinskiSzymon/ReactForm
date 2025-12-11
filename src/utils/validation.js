@@ -1,5 +1,5 @@
 import { validatePolish } from "validate-polish";
-import { peselToDate } from "./peselUtils";
+import { peselToGender, peselToDate } from "./peselUtils";
 
 export const validateField = (name, value, allValues = {}) => {
   let error = "";

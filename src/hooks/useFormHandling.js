@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { validateField } from "../utils/validation";
 import { calculateAge } from "../utils/dateUtils";
 
@@ -22,25 +22,21 @@ export const useFormHandling = () => {
     poczta: "",
     nrLokalu: "",
   });
-  const [wiek, setWiek] = useState("");
+  const wiek = useMemo(
+    () => calculateAge(formData.dataUrodzenia),
+    [formData.dataUrodzenia]
+  );
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-  useEffect(() => {
-    setWiek(calculateAge(formData.dataUrodzenia));
+  const validateFieldWrapper = useCallback(
+    (name, value) => {
+      return validateField(name, value, formData);
+    },
+    [formData]
+  );
 
-    if (formData.pesel) {
-      const peselError = validateFieldWrapper("pesel", formData.pesel);
-      setErrors((prev) => ({
-        ...prev,
-        pesel: peselError,
-      }));
-    }
-  }, [formData.dataUrodzenia, formData.pesel, formData.plec]);
-
-  const validateFieldWrapper = (name, value) => {
-    return validateField(name, value, formData);
-  };
+  
 
   const handleChange = (e) => {
     let { name, value } = e.target;

@@ -1,15 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import data from "../../data.json";
 
 export const useLocation = (formData, setFormData) => {
-  const [wojewodztwa, setWojewodztwa] = useState([]);
+  const [wojewodztwa] = useState(() => Object.keys(data));
   const [powiaty, setPowiaty] = useState([]);
   const [gminy, setGminy] = useState([]);
   const [miejscowosci, setMiejscowosci] = useState([]);
-
-  useEffect(() => {
-    setWojewodztwa(Object.keys(data));
-  }, []);
 
   const handleWojewodztwoChange = (e) => {
     const wojewodztwo = e.target.value;

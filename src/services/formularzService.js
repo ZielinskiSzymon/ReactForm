@@ -65,7 +65,7 @@ export const fetchKursyByKategoria = async (kategoria) => {
 export const fetchAllCourses = async () => {
   const { data, error } = await supabase
     .from("kursy")
-    .select("id, nazwa, kategoria")
+    .select("id, nazwa, kategoria, ilosc")
     .order("kategoria", { ascending: true })
     .order("nazwa", { ascending: true });
 
@@ -74,6 +74,45 @@ export const fetchAllCourses = async () => {
   }
 
   return data;
+};
+
+export const fetchSubmissionDetails = async (daneId) => {
+  const { data, error } = await supabase
+    .from("dane_formularz")
+    .select("*")
+    .eq("id", daneId)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+export const fetchQualifiedCount = async (kursId) => {
+  const { count, error } = await supabase
+    .from("dane_formularz")
+    .select("id", { count: "exact" })
+    .eq("kurs_id", kursId)
+    .eq("zakwalifikowano", true);
+
+  if (error) {
+    throw error;
+  }
+  return count;
+};
+
+export const fetchSubmissionCount = async (kursId) => {
+  const { count, error } = await supabase
+    .from("dane_formularz")
+    .select("id", { count: "exact" })
+    .eq("kurs_id", kursId);
+
+  if (error) {
+    throw error;
+  }
+  return count;
 };
 
 export const fetchSubmissionsForCourse = async (kursId) => {
@@ -112,11 +151,35 @@ export const updateKwalifikacja = async (daneId, status) => {
   return { success: true };
 };
 
-export const addCourse = async (nazwa, kategoria) => {
+export const updateCourse = async (kursId, nazwa, kategoria, ilosc) => {
+  const { error } = await supabase
+    .from("kursy")
+    .update({ nazwa: nazwa, kategoria: kategoria, ilosc: ilosc })
+    .eq("id", kursId);
+
+  if (error) {
+    throw error;
+  }
+
+  return { success: true };
+};
+
+export const deleteCourse = async (kursId) => {
+  const { error } = await supabase.from("kursy").delete().eq("id", kursId);
+
+  if (error) {
+    throw error;
+  }
+
+  return { success: true };
+};
+
+export const addCourse = async (nazwa, kategoria, ilosc) => {
   const { data, error } = await supabase.from("kursy").insert([
     {
       nazwa: nazwa,
       kategoria: kategoria,
+      ilosc: ilosc,
     },
   ]);
 

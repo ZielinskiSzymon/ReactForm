@@ -23,11 +23,12 @@ export const peselToDate = (pesel) => {
     return null;
   }
 
-  const date = new Date(fullYear, mm - 1, dd);
+  const date = new Date(Date.UTC(fullYear, mm - 1, dd));
+
   if (
-    date.getFullYear() !== fullYear ||
-    date.getMonth() !== mm - 1 ||
-    date.getDate() !== dd
+    date.getUTCFullYear() !== fullYear ||
+    date.getUTCMonth() !== mm - 1 ||
+    date.getUTCDate() !== dd
   ) {
     return null;
   }
